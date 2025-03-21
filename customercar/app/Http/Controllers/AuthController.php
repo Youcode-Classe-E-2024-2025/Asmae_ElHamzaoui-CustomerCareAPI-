@@ -29,10 +29,32 @@ class AuthController extends Controller
         ]);
 
         // Création du token d'authentification
-        $token = $user->createToken('YourAppName')->plainTextToken;
+        $token = $user->createToken('auth-sanctum')->plainTextToken;
 
         return response()->json(['user' => $user, 'token' => $token]);
     }
 
-    
+    // Fonction de connexion
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
+        }
+
+        // Création du token d'authentification
+        $token = $user->createToken('auth-sanctum')->plainTextToken;
+
+        return response()->json(['user' => $user, 'token' => $token]);
+    }
+
+   
 }
