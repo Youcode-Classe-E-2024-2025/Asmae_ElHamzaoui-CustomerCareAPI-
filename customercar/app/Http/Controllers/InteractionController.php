@@ -21,9 +21,14 @@ class InteractionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Ticket $ticket)
     {
-        //
+        $request->validate(['message' => 'required']);
+        $interaction = $ticket->interactions()->create([
+            'user_id' => Auth::id(),
+            'message' => $request->message
+        ]);
+        return response()->json($interaction, 201);
     }
 
     /**
