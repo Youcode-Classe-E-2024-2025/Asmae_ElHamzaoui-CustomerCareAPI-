@@ -36,7 +36,7 @@ class InteractionController extends Controller
      */
     public function show(Interaction $interaction)
     {
-        //
+        return response()->json($interaction->load('user'));
     }
 
     /**
