@@ -44,7 +44,10 @@ class InteractionController extends Controller
      */
     public function update(Request $request, Interaction $interaction)
     {
-        //
+        $this->authorize('update', $interaction);
+        $request->validate(['message' => 'required']);
+        $interaction->update($request->only('message'));
+        return response()->json($interaction);
     }
 
     /**
