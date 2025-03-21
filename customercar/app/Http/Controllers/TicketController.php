@@ -39,7 +39,8 @@ class TicketController extends Controller
      */
     public function show(Ticket $ticket)
     {
-        
+        return response()->json($ticket);
+
     }
 
     /**
