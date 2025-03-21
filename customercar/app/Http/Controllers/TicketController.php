@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TicketController extends Controller
 {
@@ -20,7 +21,17 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required', 
+            'description' => 'required'
+        ]);
+        $ticket = Ticket::create([ 
+            'user_id' => Auth::id(), 
+            'title' => $request->title, 
+            'description' => $request->description 
+        ]);
+
+        return response()->json($ticket, 201);
     }
 
     /**
@@ -28,7 +39,7 @@ class TicketController extends Controller
      */
     public function show(Ticket $ticket)
     {
-        //
+        
     }
 
     /**
