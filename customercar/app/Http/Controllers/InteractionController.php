@@ -3,16 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Interaction;
+use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class InteractionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Ticket $ticket)
     {
-        //
+        return response()->json($ticket->interactions()->with('user')->get());
     }
 
     /**
