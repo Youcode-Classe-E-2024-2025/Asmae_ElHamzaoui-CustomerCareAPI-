@@ -55,6 +55,8 @@ class InteractionController extends Controller
      */
     public function destroy(Interaction $interaction)
     {
-        //
+        $this->authorize('delete', $interaction);
+        $interaction->delete();
+        return response()->json(['message' => 'Interaction supprimée']);
     }
 }
