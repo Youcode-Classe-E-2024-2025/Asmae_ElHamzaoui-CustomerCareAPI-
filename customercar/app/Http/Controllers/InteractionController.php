@@ -62,6 +62,52 @@ class InteractionController extends Controller
         return response()->json($ticket->interactions()->with('user')->get());
     }
 
+
+    /**
+     * Create a new interaction for a ticket.
+     *
+     * @OA\Post(
+     *     path="/api/tickets/{ticket_id}/interactions",
+     *     summary="Create a new interaction",
+     *     tags={"Interactions"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="ticket_id",
+     *         in="path",
+     *         description="ID of the ticket",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"message"},
+     *             @OA\Property(property="message", type="string", example="This is a new interaction message.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Interaction created",
+     *         @OA\JsonContent(ref="#/components/schemas/Interaction")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Validation error"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Ticket not found"
+     *     )
+     * )
+     */
+
     /**
      * Store a newly created resource in storage.
      */
