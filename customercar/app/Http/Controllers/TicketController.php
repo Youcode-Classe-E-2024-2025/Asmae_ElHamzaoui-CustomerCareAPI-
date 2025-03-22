@@ -13,6 +13,31 @@ use Illuminate\Support\Facades\Auth;
  */
 class TicketController extends Controller
 {
+
+
+     /**
+     * List all tickets.
+     *
+     * @OA\Get(
+     *     path="/api/tickets",
+     *     summary="List all tickets",
+     *     tags={"Tickets"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Ticket")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
+    
     /**
      * Display a listing of the resource.
      */
