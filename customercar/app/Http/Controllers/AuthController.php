@@ -75,6 +75,40 @@ class AuthController extends Controller
         return response()->json(['user' => $user, 'token' => $token]);
     }
 
+    /**
+     * Login a user.
+     *
+     * @OA\Post(
+     *     path="/api/login",
+     *     summary="Login a user",
+     *     tags={"Authentication"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email", "password"},
+     *             @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="password")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful login",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="user", type="object", ref="#/components/schemas/User"),
+     *             @OA\Property(property="token", type="string", example="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation errors"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Invalid credentials"
+     *     )
+     * )
+     */
+
     // Fonction de connexion
     public function login(Request $request)
     {
