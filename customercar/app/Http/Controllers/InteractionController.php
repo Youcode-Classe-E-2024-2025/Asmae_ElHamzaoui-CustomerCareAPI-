@@ -164,6 +164,56 @@ class InteractionController extends Controller
         return response()->json($interaction->load('user'));
     }
 
+    
+    /**
+     * Update an existing interaction.
+     *
+     * @OA\Put(
+     *     path="/api/interactions/{interaction_id}",
+     *     summary="Update an interaction",
+     *     tags={"Interactions"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="interaction_id",
+     *         in="path",
+     *         description="ID of the interaction",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"message"},
+     *             @OA\Property(property="message", type="string", example="Updated interaction message.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Interaction updated",
+     *         @OA\JsonContent(ref="#/components/schemas/Interaction")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Validation error"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Interaction not found"
+     *     )
+     * )
+     */
+
     /**
      * Update the specified resource in storage.
      */
