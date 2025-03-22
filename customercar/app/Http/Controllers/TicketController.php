@@ -241,7 +241,7 @@ class TicketController extends Controller
      *     )
      * )
      */
-    
+
     /**
      * Remove the specified resource from storage.
      */
@@ -251,4 +251,20 @@ class TicketController extends Controller
         $ticket->delete();
         return response()->json(['message' => 'Ticket supprimé']);
     }
+
+    /**
+ * @OA\Schema(
+ *     schema="Ticket",
+ *     title="Ticket",
+ *     description="Ticket model",
+ *     @OA\Property(property="id", type="integer", format="int64", example=1),
+ *     @OA\Property(property="user_id", type="integer", format="int64", example=2),
+ *     @OA\Property(property="agent_id", type="integer", format="int64", nullable=true, example=3),
+ *     @OA\Property(property="title", type="string", example="My new ticket"),
+ *     @OA\Property(property="description", type="string", example="Description of the ticket"),
+ *     @OA\Property(property="status", type="string", enum={"open", "in progress", "resolved", "closed"}, example="open"),
+ *     @OA\Property(property="created_at", type="string", format="date-time"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time")
+ * )
+ */
 }
