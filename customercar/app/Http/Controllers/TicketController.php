@@ -98,6 +98,40 @@ class TicketController extends Controller
     }
 
     /**
+     * Get a specific ticket.
+     *
+     * @OA\Get(
+     *     path="/api/tickets/{ticket_id}",
+     *     summary="Get ticket details",
+     *     tags={"Tickets"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="ticket_id",
+     *         in="path",
+     *         description="ID of the ticket",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/Ticket")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Ticket not found"
+     *     )
+     * )
+     */
+    
+    /**
      * Display the specified resource.
      */
     public function show(Ticket $ticket)
