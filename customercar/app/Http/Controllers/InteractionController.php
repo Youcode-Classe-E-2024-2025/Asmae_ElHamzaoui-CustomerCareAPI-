@@ -226,6 +226,46 @@ class InteractionController extends Controller
     }
 
     /**
+     * Delete an interaction.
+     *
+     * @OA\Delete(
+     *     path="/api/interactions/{interaction_id}",
+     *     summary="Delete an interaction",
+     *     tags={"Interactions"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="interaction_id",
+     *         in="path",
+     *         description="ID of the interaction",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Interaction deleted",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Interaction supprimée")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Interaction not found"
+     *     )
+     * )
+     */
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Interaction $interaction)
