@@ -203,6 +203,46 @@ class TicketController extends Controller
     }
 
     /**
+     * Delete a ticket.
+     *
+     * @OA\Delete(
+     *     path="/api/tickets/{ticket_id}",
+     *     summary="Delete a ticket",
+     *     tags={"Tickets"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="ticket_id",
+     *         in="path",
+     *         description="ID of the ticket",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Ticket deleted",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Ticket supprimé")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Ticket not found"
+     *     )
+     * )
+     */
+    
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Ticket $ticket)
