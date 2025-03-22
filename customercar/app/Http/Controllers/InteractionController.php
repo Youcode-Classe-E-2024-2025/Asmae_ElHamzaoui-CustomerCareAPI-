@@ -274,4 +274,18 @@ class InteractionController extends Controller
         $interaction->delete();
         return response()->json(['message' => 'Interaction supprimée']);
     }
+
+    /**
+ * @OA\Schema(
+ *     schema="Interaction",
+ *     title="Interaction",
+ *     description="Interaction model",
+ *     @OA\Property(property="id", type="integer", format="int64", example=1),
+ *     @OA\Property(property="ticket_id", type="integer", format="int64", example=1),
+ *     @OA\Property(property="user_id", type="integer", format="int64", example=2),
+ *     @OA\Property(property="message", type="string", example="This is an interaction message."),
+ *     @OA\Property(property="created_at", type="string", format="date-time"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time")
+ * )
+ */
 }
