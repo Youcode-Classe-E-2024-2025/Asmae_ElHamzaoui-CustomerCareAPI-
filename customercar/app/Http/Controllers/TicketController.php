@@ -37,7 +37,7 @@ class TicketController extends Controller
      *     )
      * )
      */
-    
+
     /**
      * Display a listing of the resource.
      */
@@ -45,6 +45,39 @@ class TicketController extends Controller
     {
         return response()->json(Ticket::with(['user', 'agent'])->get());
     }
+
+
+    /**
+     * Create a new ticket.
+     *
+     * @OA\Post(
+     *     path="/api/tickets",
+     *     summary="Create a new ticket",
+     *     tags={"Tickets"},
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"title", "description"},
+     *             @OA\Property(property="title", type="string", example="My new ticket"),
+     *             @OA\Property(property="description", type="string", example="Description of the ticket")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Ticket created",
+     *         @OA\JsonContent(ref="#/components/schemas/Ticket")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Validation error"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
 
     /**
      * Store a newly created resource in storage.
