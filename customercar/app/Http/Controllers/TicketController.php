@@ -130,7 +130,7 @@ class TicketController extends Controller
      *     )
      * )
      */
-    
+
     /**
      * Display the specified resource.
      */
@@ -139,6 +139,58 @@ class TicketController extends Controller
         return response()->json($ticket);
 
     }
+
+
+    /**
+     * Update an existing ticket.
+     *
+     * @OA\Put(
+     *     path="/api/tickets/{ticket_id}",
+     *     summary="Update a ticket",
+     *     tags={"Tickets"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="ticket_id",
+     *         in="path",
+     *         description="ID of the ticket",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="title", type="string", example="Updated ticket title"),
+     *             @OA\Property(property="description", type="string", example="Updated ticket description"),
+     *             @OA\Property(property="status", type="string", enum={"open", "in progress", "resolved", "closed"}, example="in progress"),
+     *             @OA\Property(property="agent_id", type="integer", format="int64", nullable=true, example=3)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Ticket updated",
+     *         @OA\JsonContent(ref="#/components/schemas/Ticket")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Validation error"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Ticket not found"
+     *     )
+     * )
+     */
 
     /**
      * Update the specified resource in storage.
