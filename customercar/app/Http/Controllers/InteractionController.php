@@ -121,6 +121,41 @@ class InteractionController extends Controller
         return response()->json($interaction, 201);
     }
 
+
+    /**
+     * Get a specific interaction.
+     *
+     * @OA\Get(
+     *     path="/api/interactions/{interaction_id}",
+     *     summary="Get interaction details",
+     *     tags={"Interactions"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="interaction_id",
+     *         in="path",
+     *         description="ID of the interaction",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/Interaction")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Interaction not found"
+     *     )
+     * )
+     */
+
     /**
      * Display the specified resource.
      */
