@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @OA\Tag(
+ *     name="Authentication",
+ *     description="Operations related to user authentication"
+ * )
+ */
 class AuthController extends Controller
 {
     // Fonction d'enregistrement
