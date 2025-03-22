@@ -16,6 +16,44 @@ use Illuminate\Support\Facades\Auth;
 
 class InteractionController extends Controller
 {
+
+    /**
+     * List all interactions for a ticket.
+     *
+     * @OA\Get(
+     *     path="/api/tickets/{ticket_id}/interactions",
+     *     summary="List interactions for a ticket",
+     *     tags={"Interactions"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="ticket_id",
+     *         in="path",
+     *         description="ID of the ticket",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Interaction")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Ticket not found"
+     *     )
+     * )
+     */
+
     /**
      * Display a listing of the resource.
      */
