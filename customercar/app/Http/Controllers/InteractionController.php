@@ -7,6 +7,12 @@ use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @OA\Tag(
+ *     name="Interactions",
+ *     description="Operations related to ticket interactions"
+ * )
+ */
 
 class InteractionController extends Controller
 {
