@@ -8,51 +8,52 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @OA\Tag(
  *     name="Authentication",
- *     description="Operations related to user authentication"
+ *     description="API Endpoints for user authentication"
  * )
  */
 class AuthController extends Controller
 {
+   /**
+ * @OA\Post(
+ *     path="/register",
+ *     summary="User registration",
+ *     description="Registers a new user and returns the user data along with an authentication token.",
+ *     tags={"Authentication"},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"name", "email", "password", "role"},
+ *             @OA\Property(property="name", type="string", example="John Doe"),
+ *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
+ *             @OA\Property(property="password", type="string", format="password", example="password123"),
+ *             @OA\Property(property="password_confirmation", type="string", format="password", example="password123"),
+ *             @OA\Property(property="role", type="string", enum={"admin", "agent", "client"}, example="client")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=201,
+ *         description="User successfully registered and token generated",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="user", ref="#/components/schemas/User"),
+ *             @OA\Property(property="token", type="string", example="token_generated_here")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Validation error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="The given data was invalid."),
+ *             @OA\Property(property="errors", type="object")
+ *         )
+ *     )
+ * )
+ */
 
-
-    /**
-     * Register a new user.
-     *
-     * @OA\Post(
-     *     path="/api/register",
-     *     summary="Register a new user",
-     *     tags={"Authentication"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"name", "email", "password", "password_confirmation", "role"},
-     *             @OA\Property(property="name", type="string", example="John Doe"),
-     *             @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
-     *             @OA\Property(property="password", type="string", format="password", example="password"),
-     *             @OA\Property(property="password_confirmation", type="string", format="password", example="password"),
-     *             @OA\Property(property="role", type="string", enum={"admin", "agent", "client"}, example="client")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful registration",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="user", type="object", ref="#/components/schemas/User"),
-     *             @OA\Property(property="token", type="string", example="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation errors"
-     *     )
-     * )
-     */
-
-    // Fonction d'inscription
     public function register(Request $request)
     {
         $request->validate([
@@ -76,40 +77,36 @@ class AuthController extends Controller
     }
 
     /**
-     * Login a user.
-     *
      * @OA\Post(
-     *     path="/api/login",
-     *     summary="Login a user",
+     *     path="/login",
      *     tags={"Authentication"},
+     *     summary="User login",
+     *     description="Authenticate user and generate a JWT token",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
      *             required={"email", "password"},
-     *             @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
-     *             @OA\Property(property="password", type="string", format="password", example="password")
+     *             @OA\Property(property="email", type="string", example="john.doe@example.com"),
+     *             @OA\Property(property="password", type="string", example="password123")
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successful login",
+     *         description="Successfully authenticated and token generated",
      *         @OA\JsonContent(
      *             @OA\Property(property="user", type="object", ref="#/components/schemas/User"),
-     *             @OA\Property(property="token", type="string", example="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+     *             @OA\Property(property="token", type="string", example="jwt_token_generated_here")
      *         )
      *     ),
      *     @OA\Response(
-     *         response=422,
-     *         description="Validation errors"
-     *     ),
-     *     @OA\Response(
      *         response=401,
-     *         description="Invalid credentials"
+     *         description="Invalid credentials",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The provided credentials are incorrect.")
+     *         )
      *     )
      * )
      */
-
-    // Fonction de connexion
     public function login(Request $request)
     {
         $request->validate([
@@ -132,46 +129,40 @@ class AuthController extends Controller
     }
 
     /**
-     * Logout the user.
-     *
      * @OA\Post(
-     *     path="/api/logout",
-     *     summary="Logout the user",
+     *     path="/logout",
      *     tags={"Authentication"},
-     *     security={{"sanctum":{}}},
+     *     summary="User logout",
+     *     description="Log out the authenticated user and revoke the token",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Response(
      *         response=200,
-     *         description="Successful logout",
+     *         description="Successfully logged out",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Logged out successfully")
      *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated"
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthorized")
+     *         )
      *     )
      * )
      */
-    // Fonction de déconnexion
     public function logout(Request $request)
     {
-        $request->user()->tokens->delete();
-
-        return response()->json(['message' => 'Logged out successfully']);
+            $user = $request->user();
+    
+            if ($user) {
+                $user->tokens()->delete();
+                return response()->json(['message' => 'Successfully logged out']);
+            } else {
+                // L'utilisateur n'est pas authentifié, mais il essaie de se déconnecter
+                return response()->json(['message' => 'No user to log out'], 400);
+            }
+        
     }
-
-    /**
- * @OA\Schema(
- *     schema="User",
- *     title="User",
- *     description="User model",
- *     @OA\Property(property="id", type="integer", format="int64", example=1),
- *     @OA\Property(property="name", type="string", example="John Doe"),
- *     @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
- *     @OA\Property(property="role", type="string", enum={"admin", "agent", "client"}, example="client"),
- *     @OA\Property(property="email_verified_at", type="string", format="date-time", nullable=true),
- *     @OA\Property(property="created_at", type="string", format="date-time"),
- *     @OA\Property(property="updated_at", type="string", format="date-time")
- * )
- */
+    
 }

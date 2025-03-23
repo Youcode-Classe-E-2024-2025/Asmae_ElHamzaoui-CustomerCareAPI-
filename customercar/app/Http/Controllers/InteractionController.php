@@ -10,106 +10,79 @@ use Illuminate\Support\Facades\Auth;
 /**
  * @OA\Tag(
  *     name="Interactions",
- *     description="Operations related to ticket interactions"
+ *     description="API Endpoints for interaction management"
  * )
  */
-
 class InteractionController extends Controller
 {
-
     /**
-     * List all interactions for a ticket.
-     *
      * @OA\Get(
-     *     path="/api/tickets/{ticket_id}/interactions",
-     *     summary="List interactions for a ticket",
+     *     path="/tickets/{ticket}/interactions",
      *     tags={"Interactions"},
-     *     security={{"sanctum":{}}},
+     *     summary="Get all interactions for a specific ticket",
+     *     security={{"bearerAuth":{}}}, 
+     *     description="Fetch all interactions related to a specific ticket, including user information",
      *     @OA\Parameter(
-     *         name="ticket_id",
+     *         name="ticket",
      *         in="path",
-     *         description="ID of the ticket",
      *         required=true,
-     *         @OA\Schema(
-     *             type="integer",
-     *             format="int64"
-     *         )
+     *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successful operation",
+     *         description="List of interactions for the ticket",
      *         @OA\JsonContent(
      *             type="array",
      *             @OA\Items(ref="#/components/schemas/Interaction")
      *         )
      *     ),
      *     @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated"
-     *     ),
-     *     @OA\Response(
      *         response=404,
-     *         description="Ticket not found"
+     *         description="Ticket not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Ticket not found")
+     *         )
      *     )
      * )
-     */
-
-    /**
-     * Display a listing of the resource.
      */
     public function index(Ticket $ticket)
     {
         return response()->json($ticket->interactions()->with('user')->get());
     }
 
-
     /**
-     * Create a new interaction for a ticket.
-     *
      * @OA\Post(
-     *     path="/api/tickets/{ticket_id}/interactions",
-     *     summary="Create a new interaction",
+     *     path="/tickets/{ticket}/interactions",
      *     tags={"Interactions"},
-     *     security={{"sanctum":{}}},
+     *     summary="Create a new interaction for a ticket",
+     *     security={{"bearerAuth":{}}}, 
+     *     description="Add a new interaction to a specific ticket by the authenticated user",
      *     @OA\Parameter(
-     *         name="ticket_id",
+     *         name="ticket",
      *         in="path",
-     *         description="ID of the ticket",
      *         required=true,
-     *         @OA\Schema(
-     *             type="integer",
-     *             format="int64"
-     *         )
+     *         @OA\Schema(type="integer")
      *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
      *             required={"message"},
-     *             @OA\Property(property="message", type="string", example="This is a new interaction message.")
+     *             @OA\Property(property="message", type="string", example="The issue has been addressed.")
      *         )
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Interaction created",
+     *         description="Interaction successfully created",
      *         @OA\JsonContent(ref="#/components/schemas/Interaction")
      *     ),
      *     @OA\Response(
      *         response=400,
-     *         description="Validation error"
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Ticket not found"
+     *         description="Bad request",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The given data was invalid.")
+     *         )
      *     )
      * )
-     */
-
-    /**
-     * Store a newly created resource in storage.
      */
     public function store(Request $request, Ticket $ticket)
     {
@@ -121,101 +94,71 @@ class InteractionController extends Controller
         return response()->json($interaction, 201);
     }
 
-
     /**
-     * Get a specific interaction.
-     *
      * @OA\Get(
-     *     path="/api/interactions/{interaction_id}",
-     *     summary="Get interaction details",
+     *     path="/interactions/{interaction}",
      *     tags={"Interactions"},
-     *     security={{"sanctum":{}}},
+     *     summary="Get a specific interaction",
+     *     security={{"bearerAuth":{}}}, 
+     *     description="Fetch a specific interaction by its ID, including the associated user information",
      *     @OA\Parameter(
-     *         name="interaction_id",
+     *         name="interaction",
      *         in="path",
-     *         description="ID of the interaction",
      *         required=true,
-     *         @OA\Schema(
-     *             type="integer",
-     *             format="int64"
-     *         )
+     *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successful operation",
+     *         description="Interaction details",
      *         @OA\JsonContent(ref="#/components/schemas/Interaction")
      *     ),
      *     @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated"
-     *     ),
-     *     @OA\Response(
      *         response=404,
-     *         description="Interaction not found"
+     *         description="Interaction not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Interaction not found")
+     *         )
      *     )
      * )
-     */
-
-    /**
-     * Display the specified resource.
      */
     public function show(Interaction $interaction)
     {
         return response()->json($interaction->load('user'));
     }
 
-    
     /**
-     * Update an existing interaction.
-     *
      * @OA\Put(
-     *     path="/api/interactions/{interaction_id}",
-     *     summary="Update an interaction",
+     *     path="/interactions/{interaction}",
      *     tags={"Interactions"},
-     *     security={{"sanctum":{}}},
+     *     summary="Update a specific interaction",
+     *     security={{"bearerAuth":{}}}, 
+     *     description="Update an existing interaction's message",
      *     @OA\Parameter(
-     *         name="interaction_id",
+     *         name="interaction",
      *         in="path",
-     *         description="ID of the interaction",
      *         required=true,
-     *         @OA\Schema(
-     *             type="integer",
-     *             format="int64"
-     *         )
+     *         @OA\Schema(type="integer")
      *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
      *             required={"message"},
-     *             @OA\Property(property="message", type="string", example="Updated interaction message.")
+     *             @OA\Property(property="message", type="string", example="Updated message content.")
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Interaction updated",
+     *         description="Interaction successfully updated",
      *         @OA\JsonContent(ref="#/components/schemas/Interaction")
      *     ),
      *     @OA\Response(
-     *         response=400,
-     *         description="Validation error"
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated"
-     *     ),
-     *     @OA\Response(
-     *         response=403,
-     *         description="Unauthorized"
-     *     ),
-     *     @OA\Response(
      *         response=404,
-     *         description="Interaction not found"
+     *         description="Interaction not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Interaction not found")
+     *         )
      *     )
      * )
-     */
-
-    /**
-     * Update the specified resource in storage.
      */
     public function update(Request $request, Interaction $interaction)
     {
@@ -226,47 +169,33 @@ class InteractionController extends Controller
     }
 
     /**
-     * Delete an interaction.
-     *
      * @OA\Delete(
-     *     path="/api/interactions/{interaction_id}",
-     *     summary="Delete an interaction",
+     *     path="/interactions/{interaction}",
      *     tags={"Interactions"},
-     *     security={{"sanctum":{}}},
+     *     summary="Delete a specific interaction",
+     *     security={{"bearerAuth":{}}}, 
+     *     description="Delete a specific interaction by its ID",
      *     @OA\Parameter(
-     *         name="interaction_id",
+     *         name="interaction",
      *         in="path",
-     *         description="ID of the interaction",
      *         required=true,
-     *         @OA\Schema(
-     *             type="integer",
-     *             format="int64"
-     *         )
+     *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Interaction deleted",
+     *         description="Interaction successfully deleted",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Interaction supprimée")
      *         )
      *     ),
      *     @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated"
-     *     ),
-     *     @OA\Response(
-     *         response=403,
-     *         description="Unauthorized"
-     *     ),
-     *     @OA\Response(
      *         response=404,
-     *         description="Interaction not found"
+     *         description="Interaction not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Interaction not found")
+     *         )
      *     )
      * )
-     */
-
-    /**
-     * Remove the specified resource from storage.
      */
     public function destroy(Interaction $interaction)
     {
@@ -274,18 +203,4 @@ class InteractionController extends Controller
         $interaction->delete();
         return response()->json(['message' => 'Interaction supprimée']);
     }
-
-    /**
- * @OA\Schema(
- *     schema="Interaction",
- *     title="Interaction",
- *     description="Interaction model",
- *     @OA\Property(property="id", type="integer", format="int64", example=1),
- *     @OA\Property(property="ticket_id", type="integer", format="int64", example=1),
- *     @OA\Property(property="user_id", type="integer", format="int64", example=2),
- *     @OA\Property(property="message", type="string", example="This is an interaction message."),
- *     @OA\Property(property="created_at", type="string", format="date-time"),
- *     @OA\Property(property="updated_at", type="string", format="date-time")
- * )
- */
 }
