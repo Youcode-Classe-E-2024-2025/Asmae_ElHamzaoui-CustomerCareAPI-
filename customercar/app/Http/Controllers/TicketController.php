@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ticket;
+use App\Services\TicketService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use OpenApi\Annotations as OA;
 
 /**
  * @OA\Tag(
@@ -14,26 +15,25 @@ use Illuminate\Support\Facades\Auth;
  */
 class TicketController extends Controller
 {
-    /**
- * @OA\Get(
- *     path="/tickets",
- *     tags={"Tickets"},
- *     summary="Get all tickets",
- *     security={{"bearerAuth":{}}}, 
- *     @OA\Response(
- *         response=200,
- *         description="List of all tickets",
- *         @OA\JsonContent(
- *             type="array",
- *             @OA\Items(ref="#/components/schemas/Ticket")
- *         )
- *     )
- * )
- */
+    protected $ticketService;
 
+    public function __construct(TicketService $ticketService)
+    {
+        $this->ticketService = $ticketService;
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/tickets",
+     *     tags={"Tickets"},
+     *     summary="Get all tickets",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(response=200, description="List of all tickets")
+     * )
+     */
     public function index()
     {
-        return response()->json(Ticket::with(['user', 'agent'])->get());
+        return response()->json($this->ticketService->getAllTickets());
     }
 
     /**
@@ -41,8 +41,7 @@ class TicketController extends Controller
      *     path="/tickets",
      *     tags={"Tickets"},
      *     summary="Create a new ticket",
-     *     security={{"bearerAuth":{}}}, 
-     *     description="Create a new ticket for the authenticated user",
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -51,33 +50,17 @@ class TicketController extends Controller
      *             @OA\Property(property="description", type="string", example="The system is down.")
      *         )
      *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Ticket successfully created",
-     *         @OA\JsonContent(ref="#/components/schemas/Ticket")
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Bad request",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="The given data was invalid.")
-     *         )
-     *     )
+     *     @OA\Response(response=201, description="Ticket successfully created")
      * )
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required'
-        ]);
-        $ticket = Ticket::create([
-            'user_id' => Auth::id(),
-            'title' => $request->title,
-            'description' => $request->description
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
         ]);
 
-        return response()->json($ticket, 201);
+        return response()->json($this->ticketService->createTicket(Auth::id(), $data), 201);
     }
 
     /**
@@ -85,108 +68,69 @@ class TicketController extends Controller
      *     path="/tickets/{ticket}",
      *     tags={"Tickets"},
      *     summary="Get a specific ticket",
-     *      security={{"bearerAuth":{}}}, 
-     *     description="Fetch a specific ticket by its ID",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="ticket",
      *         in="path",
      *         required=true,
      *         @OA\Schema(type="integer")
      *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Ticket details",
-     *         @OA\JsonContent(ref="#/components/schemas/Ticket")
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Ticket not found",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Ticket not found")
-     *         )
-     *     )
+     *     @OA\Response(response=200, description="Ticket details")
      * )
      */
-    public function show(Ticket $ticket)
+    public function show($id)
     {
-        return response()->json($ticket);
+        return response()->json($this->ticketService->getTicketById($id));
     }
 
     /**
-     * @OA\Put(
-     *     path="/tickets/{ticket}",
-     *     tags={"Tickets"},
-     *     summary="Update a specific ticket",
-     *     security={{"bearerAuth":{}}}, 
-     *     description="Update an existing ticket's details",
-     *     @OA\Parameter(
-     *         name="ticket",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="title", type="string", example="Updated Issue Title"),
-     *             @OA\Property(property="description", type="string", example="Updated description"),
-     *             @OA\Property(property="status", type="string", example="resolved")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Ticket successfully updated",
-     *         @OA\JsonContent(ref="#/components/schemas/Ticket")
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Ticket not found",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Ticket not found")
-     *         )
-     *     )
-     * )
-     */
-    public function update(Request $request, Ticket $ticket)
+ * @OA\Put(
+ *     path="/tickets/{ticket}",
+ *     tags={"Tickets"},
+ *     summary="Update a specific ticket",
+ *     security={{"bearerAuth":{}}},
+ *     @OA\Parameter(
+ *         name="ticket",
+ *         in="path",
+ *         required=true,
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"title", "description"},
+ *             @OA\Property(property="title", type="string", example="Updated Issue Title"),
+ *             @OA\Property(property="description", type="string", example="Updated description"),
+ *             @OA\Property(property="status", type="string", example="resolved"),
+ *             @OA\Property(property="agent_id", type="integer", example=2)
+ *         )
+ *     ),
+ *     @OA\Response(response=200, description="Ticket successfully updated")
+ * )
+ */
+    public function update(Request $request, $id)
     {
-        $this->authorize('update', $ticket);
-        $ticket->update($request->only('title', 'description', 'status', 'agent_id'));
-        return response()->json($ticket);
+        $data = $request->only(['title', 'description', 'status', 'agent_id']);
+        return response()->json($this->ticketService->updateTicket($id, $data));
     }
 
     /**
      * @OA\Delete(
      *     path="/tickets/{ticket}",
      *     tags={"Tickets"},
-     *     summary="Delete a specific ticket", 
-     *     security={{"bearerAuth":{}}}, 
-     *     description="Delete a specific ticket by its ID",
+     *     summary="Delete a specific ticket",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="ticket",
      *         in="path",
      *         required=true,
      *         @OA\Schema(type="integer")
      *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Ticket successfully deleted",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Ticket supprimé")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Ticket not found",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Ticket not found")
-     *         )
-     *     )
+     *     @OA\Response(response=200, description="Ticket successfully deleted")
      * )
      */
-    public function destroy(Ticket $ticket)
+    public function destroy($id)
     {
-        $this->authorize('delete', $ticket);
-        $ticket->delete();
-        return response()->json(['message' => 'Ticket supprimé']);
+        return response()->json($this->ticketService->deleteTicket($id));
     }
 }
