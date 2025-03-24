@@ -14,72 +14,26 @@ use Illuminate\Support\Facades\Auth;
  */
 class TicketController extends Controller
 {
- 
-     /**
-     * @OA\Get(
-     *     path="/tickets",
-     *     tags={"Tickets"},
-     *     summary="Get all tickets with filtering and pagination",
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="status",
-     *         in="query",
-     *         description="Filter by ticket status",
-     *         required=false,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="user_id",
-     *         in="query",
-     *         description="Filter by user ID",
-     *         required=false,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="agent_id",
-     *         in="query",
-     *         description="Filter by agent ID",
-     *         required=false,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="per_page",
-     *         in="query",
-     *         description="Number of tickets per page",
-     *         required=false,
-     *         @OA\Schema(type="integer", default=10)
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of tickets with pagination",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Ticket")),
-     *             @OA\Property(property="links", type="object"),
-     *             @OA\Property(property="meta", type="object")
-     *         )
-     *     )
-     * )
-     */
-    public function index(Request $request)
+    /**
+ * @OA\Get(
+ *     path="/tickets",
+ *     tags={"Tickets"},
+ *     summary="Get all tickets",
+ *     security={{"bearerAuth":{}}}, 
+ *     @OA\Response(
+ *         response=200,
+ *         description="List of all tickets",
+ *         @OA\JsonContent(
+ *             type="array",
+ *             @OA\Items(ref="#/components/schemas/Ticket")
+ *         )
+ *     )
+ * )
+ */
+
+    public function index()
     {
-        $query = Ticket::with(['user', 'agent']);
-
-        if ($request->has('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->has('user_id')) {
-            $query->where('user_id', $request->user_id);
-        }
-
-        if ($request->has('agent_id')) {
-            $query->where('agent_id', $request->agent_id);
-        }
-
-        $tickets = $query->paginate($request->get('per_page', 10));
-
-        return response()->json($tickets);
+        return response()->json(Ticket::with(['user', 'agent'])->get());
     }
 
     /**
